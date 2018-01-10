@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd" > 
+<mapper namespace="com.lihui.share.dao.IUserDao">
+	<!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+	<resultMap type="com.lihui.share.entity.User" id="userResultMap">
+        <id property="user_id" column="user_id" jdbcType="INTEGER" javaType="int"/>
+        <result property="loginame" column="loginame" jdbcType="VARCHAR" javaType="String"/>
+        <result property="name" column="name" jdbcType="VARCHAR" javaType="String"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR" javaType="String"/>
+        
+        <result property="emp_id" column="emp_id" jdbcType="VARCHAR" javaType="String"/>
+        <result property="pwd" column="pwd" jdbcType="VARCHAR" javaType="String"/>
+        <result property="email" column="email" jdbcType="VARCHAR" javaType="String"/>
+        <result property="tel" column="tel" jdbcType="VARCHAR" javaType="String"/>
+        <result property="addr" column="addr" jdbcType="VARCHAR" javaType="String"/>
+        <result property="company" column="company" jdbcType="VARCHAR" javaType="String"/>
+        <result property="dept" column="dept" jdbcType="VARCHAR" javaType="String"/>
+        <result property="project" column="project" jdbcType="VARCHAR" javaType="String"/>
+        <result property="position" column="position" jdbcType="VARCHAR" javaType="String"/>
+        <result property="level" column="level" jdbcType="VARCHAR" javaType="String"/>
+        <result property="hiredate" column="hiredate" jdbcType="DATE" javaType="String"/>
+        
+	</resultMap>
+	<select id="findAll" resultType="com.lihui.share.entity.User">
+		select user_id,loginame,name,sex,emp_id,pwd,email,tel,addr,company,dept,project,position,level,hiredate from t_user
+	</select>
+	<select id="queryUserByPage" resultType="com.lihui.share.entity.User">
+		select user_id,loginame,name,sex,emp_id,pwd,email,tel,addr,company,dept,project,position,level,date_format(hiredate,'%Y-%m-%d') as 'hiredate' from t_user
+		order by user_id ASC limit #{start},#{end}
+	</select>
+	<select id="queryUserById" resultType="com.lihui.share.entity.User">
+		select * from t_user where user_id = #{user_id}
+	</select>
+	<select id="queryUserByLoginNameAndPwd" resultType="com.lihui.share.entity.User">
+		select * from t_user where loginame = #{0} and pwd = #{1}
+	</select>
+	
+	<select id="queryUserByLoginName" resultType="com.lihui.share.entity.User">
+		select * from t_user where loginame = #{0}
+	</select>
+	<select id="queryUserCounts" resultType="Integer">
+		select count(*) from t_user
+	</select>
+	<update id="updateUser">
+		update t_user 
+		<set>
+			<if test="loginame != null and loginame != ''">
+				loginame=#{loginame,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null and name != ''">
+				name=#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="emp_id != null and emp_id != ''">
+				emp_id=#{emp_id,jdbcType=VARCHAR},
+			</if>
+			<if test="pwd != null and pwd != ''">
+				pwd=#{pwd,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null and email != ''">
+				email=#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null and tel != ''">
+				tel=#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="addr != null and addr != ''">
+				addr=#{addr,jdbcType=VARCHAR},
+			</if>
+			<if test="company != null and company != ''">
+				company=#{company,jdbcType=VARCHAR},
+			</if>
+			<if test="dept != null and dept != ''">
+				dept=#{dept,jdbcType=VARCHAR},
+			</if>
+			<if test="project != null and project != ''">
+				project=#{project,jdbcType=VARCHAR},
+			</if>
+			<if test="position != null and position != ''">
+				position=#{position,jdbcType=VARCHAR},
+			</if>
+			<if test="level != null and level != ''">
+				level=#{level,jdbcType=VARCHAR},
+			</if>
+			<if test="hiredate != null and hiredate != ''">
+				hiredate=#{hiredate,jdbcType=VARCHAR},
+			</if>
+			
+		</set>
+			where user_id=#{user_id,jdbcType=INTEGER}
+	</update>
+	 
+	<insert id="insertUser" parameterType="com.lihui.share.entity.User"> 
+        insert into t_user(loginame,name,sex,emp_id,pwd,email,tel,addr,company,dept,project,position,level,hiredate)  
+               values(#{loginame,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{sex,jdbcType=VARCHAR},#{emp_id,jdbcType=VARCHAR},
+             #{pwd,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},
+             #{tel,jdbcType=VARCHAR},#{addr,jdbcType=VARCHAR},#{company,jdbcType=VARCHAR},
+             #{dept,jdbcType=VARCHAR},#{project,jdbcType=VARCHAR},#{position,jdbcType=VARCHAR},
+             #{level,jdbcType=VARCHAR}, #{hiredate,jdbcType=DATE})  
+    </insert>
+    
+    <delete id="deleteUserById" parameterType="Integer">
+    	delete from t_user where user_id=#{user_id}
+    </delete>
+</mapper>

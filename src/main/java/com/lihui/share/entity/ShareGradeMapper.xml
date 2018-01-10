@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"   
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd" > 
+<mapper namespace="com.lihui.share.dao.IShareGradeDao">
+	<!-- 自定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+	<resultMap type="com.lihui.share.entity.ShareGrade" id="shareGradeResultMap">
+        <result property="shareId" column="share_id" jdbcType="INTEGER" javaType="Integer"/>
+        <result property="userId" column="us_id" jdbcType="INTEGER" javaType="Integer"/>
+        <result property="grade" column="u_grade" jdbcType="DOUBLE" javaType="Double"/>
+    </resultMap> 
+    
+    <insert id="insertShareGrade">
+    	insert into t_grade (share_id,us_id,u_grade) values(#{s_id},#{u_id},#{grade})
+    </insert>
+    <!---->
+	<select id="queryShareGradeBySidAndUid" resultMap="shareGradeResultMap">
+		select * from t_grade where us_id=#{u_id} and share_id=#{s_id}
+	</select>
+	<update id="updateShareGrade">
+		update t_grade set share_id=#{s_id},us_id=#{u_id},u_grade=#{grade} where share_id=#{s_id}
+	</update>
+	<select id="queryAllShareGrade" resultMap="shareGradeResultMap">
+		select * from t_grade;
+	</select>
+	<select id="queryShareGradeByShareId" resultMap="shareGradeResultMap">
+		select * from t_grade where share_id=#{s_id};
+	</select>
+	<delete id="deleteShareGradeBySidAndUid">
+		delete from t_grade where share_id=#{s_id} and us_id=#{u_id}
+	</delete>
+</mapper>
