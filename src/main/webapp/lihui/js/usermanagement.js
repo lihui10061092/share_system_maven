@@ -5,7 +5,7 @@ $(function () {
     var datagrid; //定义全局变量datagrid
     var editRow = undefined; //定义全局变量：当前编辑的行
     datagrid = $("#usertable").datagrid({
-        url: '/share_system/user/queryUserByPage.do', //请求的数据源
+        url: '/Share_system/user/queryUserByPage.do', //请求的数据源
         method: 'get',
         pagination: true, //显示分页
         pageSize: 10, //页大小
@@ -69,6 +69,14 @@ $(function () {
            },
            { field: 'hiredate', title: '入职日期', width: 100,
                editor: { type: 'validatebox', options: { required: true} }
+           },
+           { field: 'user_sore', title: '最终得分', width: 100,
+	           	formatter:function(value,row,rowIndex) {
+					    if(row.userGrade!=undefined){
+					        return row.userGrade.grade;
+					    }
+	             }
+//               editor: { type: 'validatebox', options: { required: true} }
            }
           
           
@@ -104,7 +112,7 @@ $(function () {
         	    	$.messager.confirm('确认', '是否确认删除该用户?', function (r) {  
         	            $.ajax({  
         	                type: "post",  
-        	                url: "/share_system/user/deleteUserById.do",  
+        	                url: "/Share_system/user/deleteUserById.do",  
         	                data: 
         	  			    {
         	                  	"user_id":row.user_id
@@ -156,6 +164,16 @@ $(function () {
              }
          }
          }, '-',
+          { text: '导出', iconCls: 'icon-export', handler: function () {
+//          	debugger;
+          	var form = $("<form>")
+          	form.attr('style', 'disply:none');
+          	form.attr('mehod', 'post');
+          	form.attr('action','/Share_system/user/exportAllUser.do');
+          	$('body').append(form);
+          	form.submit();
+         }
+         }, '-',
          { text: '保存', iconCls: 'icon-save', handler: function () {
              //保存时结束当前编辑的行，自动触发onAfterEdit事件如果要与后台交互可将数据通过Ajax提交后台
              
@@ -174,7 +192,7 @@ $(function () {
             //console.info(rowData);
             $.ajax({  
 	               type: "post",  
-	                url: "/share_system/user/updateUser.do",  
+	                url: "/Share_system/user/updateUser.do",  
 	                data: 
 	  			    {
 	                  	"user_id":rowData.user_id,

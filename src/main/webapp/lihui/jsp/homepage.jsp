@@ -51,9 +51,9 @@ $(function(){
 
 <div data-options="region:'north',split:true" style="height:100px;">
 <ul id="nav"> 
-<li><a href=http://localhost:8080/share_system/lihui/jsp/userhomepage.jsp?curUser=<%=name%> target="_Blan">我的首页</a></li> 
+<li><a href=http://localhost:8080/Share_system/lihui/jsp/userhomepage.jsp?curUser=<%=name%> target="_Blan">我的首页</a></li> 
 <li><a href="">所有分享</a></li> 
-<li><a href="">在线聊</a></li> 
+<li><a href="http://localhost:8080/Share_system/lihui/jsp/onlinechat.jsp">在线聊</a></li> 
 <li><a href="">话题圈</a></li> 
 <li><a href="">技术支持</a></li> 
 <li><a href="">我的课程</a></li> 
@@ -62,7 +62,7 @@ $(function(){
 <div>当前用户：<%=name%></div>
  </div>   
     <div data-options="region:'south',title:'版权信息',split:true" style="height:100px;">
-    <div>CopyRight Elead2017</div>
+    <div>CopyRight Lihui2018</div>
     </div>   
     <div data-options="region:'east',title:'日历',split:true" style="width:210px">
     <div id="calendar" class="easyui-calendar" style="width:180px;height:200px;"></div>  

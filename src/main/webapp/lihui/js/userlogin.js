@@ -62,6 +62,7 @@ function userLogin(){
                   		$.messager.show({
 							title : 'Success!',
 							msg : '登录成功！',
+//							timeout: 1000,
 							style:{
                             left:800, // 与左边界的距离
                             top:450 // 与顶部的距离

@@ -11,7 +11,7 @@
 <script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/jQuery/jquery-2.2.3.min.js"></script>
 <script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/easyUI/jquery.easyui.min.js"></script>
 <script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/easyUI/locale/easyui-lang-zh_CN.js"></script>
-<script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/js/mypage.js"></script>
+<script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/js/mysharepage.js"></script>
 
 
 <link rel="stylesheet" type="text/css" href="<%=contextPath%>/lihui/easyUI/themes/gray/easyui.css" />
@@ -30,7 +30,7 @@
 		<ul id="nav">
 			<li><a
 				href="http://localhost:8080/share_system/lihui/jsp/homepage.jsp?curUser=<%=name%> target='_Blan'">首页</a></li>
-			<li><a href="">在线聊</a></li>
+			<li><a href="http://localhost:8080/share_system/lihui/jsp/onlinechat.jsp">在线聊</a></li>
 			<li><a href="">话题圈</a></li>
 			<li><a href="">我的帖子</a></li>
 			<li><a href="">我的评分</a></li>
@@ -43,6 +43,9 @@
 	<div style="margin:20px 0;"></div>
 	<div>
 			<br />
+			<table id="mysharetable" style="width:100%;height:550px">
+			</table>
+			<!-- 
 			<table id="mytable" class="easyui-datagrid" style="width:100%;height:550px"
 			data-options="rownumbers:true,title:'我的分享',singleSelect:true,pagination:true,
 			url:'/share_system/share/queryMyShareByPage.do',method:'get'">
@@ -56,6 +59,7 @@
 			</tr>
 		</thead>
 	</table>
+	 -->
 	</div>
 	
 	
@@ -107,6 +111,12 @@
 					style="width:100%"
 					></td>
 				</tr>
+				<tr>
+					<td nowrap align="left" style="height: 35px">听课人数：</td>
+					<td style="height: 35px" align="left">
+					<input id="content" name="studentNum" type="text"class="easyui-textbox"  style="width:20%"/>
+						</td>
+				</tr>
 				<!--  
 				<tr>
 				<td align="right" style="height: 35px">
@@ -123,7 +133,7 @@
 			</table>
 		</form>
 		<div border="false">
-                <a class="easyui-linkbutton" iconCls="icon-ok" onclick="saveShare()">确定</a>
+                <a class="easyui-linkbutton" iconCls="icon-ok" id = "submitBtn" onclick="saveShare()">确定</a>
                 <a class="easyui-linkbutton" iconCls="icon-cancel" href="javascript:void(0)" onclick="closeDialog()">关闭</a>
         </div>
 	</div>

@@ -2,6 +2,7 @@ package com.lihui.share.entity;
 //用户得分
 public class UserGrade
 {
+	private int user_grade_id;
 	//用户id
 	private int userId;
 	//所得分数，该用户所有分享平均分的总和
@@ -25,6 +26,16 @@ public class UserGrade
 	public void setGrade(double grade)
 	{
 		this.grade = grade;
+	}
+
+	public int getUser_grade_id()
+	{
+		return user_grade_id;
+	}
+
+	public void setUser_grade_id(int user_grade_id)
+	{
+		this.user_grade_id = user_grade_id;
 	}
 
 	public UserGrade()

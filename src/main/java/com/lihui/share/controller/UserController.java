@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +29,7 @@ import com.lihui.share.util.ResultBean;
  * 
  * @author lihui
  * @Description 用户Controller层，与前台交互
- * @date 2017年3月22日
+ * @date 2017年8月22日
  */
 @Controller
 @RequestMapping("/user")
@@ -43,13 +45,11 @@ public class UserController extends BaseController
 		String loginName = request.getParameter("loginName");
 		String pwd = request.getParameter("password");
 //		Map<String, String> paramMap = this.getAllParamsStringMap(request);
-//		String loginName = paramMap.get("loginName");
-//		String pwd = paramMap.get("password");
 		User user = null;
 		ResultBean rb = ResultBean.getInstance();
 		Map<String, Object> data = new HashMap<String, Object>();
 		boolean isValided = false;
-		user = userService.findUserByLoginNameAndPwd(loginName, pwd);
+		user = userService.queryUserByLoginNameAndPwd(loginName, pwd);
 		if(null != user)
 		{
 			isValided = true;
@@ -79,21 +79,11 @@ public class UserController extends BaseController
 	
 	@RequestMapping(value="/listAllUser.do")
 	@ResponseBody
+	@Deprecated
 	public List<User> queryAllUser(HttpServletRequest request, HttpServletResponse response)
-	{//TODO 这里也要改成分页查询
-//		boolean success = false;
-//		ResultBean rb = ResultBean.getInstance();
-//		Map<String, Object> resultData = new HashMap<String, Object>();
+	{// 此方法作废，用queryUserByPage()分页查询方法代替
 		List<User> allUser = new ArrayList<User>();
-		allUser = userService.findAll();
-//		if(allUser.size() > 0)
-//		{
-//			success = true;
-//		}
-//		resultData.put("data", allUser);
-//		rb.setSuccess(success);
-//		rb.setData(resultData);
-//		return rb;
+		allUser = userService.queryAll();
 		return allUser;
 	}
 	
@@ -108,13 +98,6 @@ public class UserController extends BaseController
 		int row = Integer.valueOf(request.getParameter("rows"));
 		List<User> userList = new ArrayList<User>();
 		userList = userService.queryUserByPage(pageIndex, row);
-//		for(User user : userList)
-//		{
-//			Date hireDate = user.getHiredate();
-//			SimpleDateFormat sf = new SimpleDateFormat();
-//			user.setHiredate(DateUtil.strToDateTime(sf.format(hireDate)));
-//		}
-//		SimpleDateFormat sf = new SimpleDateFormat();
 		JSONArray ja = JSONArray.parseArray(JSON.toJSONString(userList));
 		int userCounts = userService.queryUserCounts();
 		jo.put("total", userCounts);
@@ -129,19 +112,12 @@ public class UserController extends BaseController
 		ResultBean rb = ResultBean.getInstance();
 		boolean isSuccess = true;
 		request.setCharacterEncoding("utf-8");
-//		Map<String, String> allParams = this.getAllParamsStringMap(request);
 		Map<String, Object> allObjParams = this.getAllParamsMap(request);
 		allObjParams.remove("password1");
-		//不需要进行日期转换
-//		String hireDateStr = (String) allObjParams.get("hiredate");
-//		allObjParams.remove("hiredate");
-//		Date hireDate = DateUtil.strToDate(hireDateStr);
-//		allObjParams.put("hiredate", hireDate);
 		//查询登录名是否已经注册
 		//Map中的Key是前端input 的name属性
 		String loginame = (String) allObjParams.get("loginame");
-//		String pwd = (String) allObjParams.get("pwd");
-		User user = userService.findUserByLoginName(loginame);
+		User user = userService.queryUserByLoginName(loginame);
 		Map<String, Object> data = new HashMap<String, Object>();
 		//已经注册，返回前台提示用户已经存在
 		if(null != user)
@@ -150,14 +126,12 @@ public class UserController extends BaseController
 		}
 		else
 		{//未注册，进行注册
-//			Map<String, String> allParams = new HashMap<String, String>();
 			userService.insertUser(allObjParams);
 		}
 
 		data.put("success", isSuccess);
 		rb.setSuccess(isSuccess);
 		rb.setData(data);
-//		
 		return rb;
 	}
 	
@@ -169,11 +143,29 @@ public class UserController extends BaseController
 		Map<String, Object> updateParams = this.getAllParamsMap(request);
 		userService.updateUser(updateParams);
 		rb.setSuccess(true);
-		//TODO 改成分页查询
-		List<User> allUsers = userService.findAll();
+		List<User> allUsers = userService.queryAll();
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("data", allUsers);
 		rb.setData(data);
 		return rb;
+	}
+	
+	@RequestMapping(value="/exportAllUser.do")
+	public void exportAllUser(HttpServletRequest request, HttpServletResponse response)
+	{
+		XSSFWorkbook workbook =  userService.exportAllUser();
+		response.setContentType("application/cotet-stream");
+		response.setHeader("Content-Disposition", "attachment;filename=exportUser.xlsx");
+		
+		try
+		{
+			ServletOutputStream out = response.getOutputStream();
+			workbook.write(out);
+			out.flush();
+			out.close();
+		} catch (IOException e)
+		{
+			logger.info(e);
+		}
 	}
 }

@@ -3,18 +3,19 @@ package com.lihui.share.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.lihui.share.entity.User;
 
 public interface IUserService
 {
-	public User findUserById(int userId);
+	public User queryUserById(int userId);
 	
-	public List<User> findAll();
+	public List<User> queryAll();
 	
-	public User findUserByLoginNameAndPwd(String loginame, String pwd);
+	public User queryUserByLoginNameAndPwd(String loginame, String pwd);
 	
-	public User findUserByLoginName(String loginame);
+	public User queryUserByLoginName(String loginame);
 	
 	public void updateUser(Map<String, Object> updateParams);
 	
@@ -25,4 +26,6 @@ public interface IUserService
 	public List<User> queryUserByPage(int pageIndex, int row);
 
 	public int queryUserCounts();
+
+	public XSSFWorkbook exportAllUser();
 }

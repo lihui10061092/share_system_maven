@@ -14,7 +14,7 @@ import com.lihui.share.entity.Share;
  * 
  * @author lihui
  * @Description 分享Dao层CRUD
- * @date 2017年3月23日
+ * @date 2017年8月23日
  */
 //@Repository
 public class ShareDaoImpl implements IShareDao
@@ -63,15 +63,15 @@ public class ShareDaoImpl implements IShareDao
 	}
 	//更新分享
 	@Override
-	public void updateAdminGrade(@Param("ad_grade")int ad_grade, @Param("s_id")int s_id)
+	public void updateAdminGrade(@Param("ad_grade")double ad_grade, @Param("s_id")int s_id)
 	{
 		tmp.update("updateAdminGrade");
 	}
 
 	@Override
-	public List<Share> queryAllShare()
+	public List<Share> queryAllShareByAdmin(@Param("start")int start, @Param("end")int end)
 	{
-		List<Share> allShare = tmp.selectList("queryAllShare");
+		List<Share> allShare = tmp.selectList("queryAllShareByAdmin");
 		return allShare;
 	}
 
@@ -100,12 +100,6 @@ public class ShareDaoImpl implements IShareDao
 	{
 		return tmp.selectOne("queryMyShareCounts");
 	}
-//	@Override
-//	public int getUserIdByShareId(int shareId)
-//	{
-//		// TODO Auto-generated method stub  这个方法在Service层中提供
-//		return 0;
-//	}
 
 	@Override
 	public List<Share> queryMyShareByPage(int userId, int start, int end)
@@ -129,6 +123,12 @@ public class ShareDaoImpl implements IShareDao
 	public void deleteShareByUserId(int userId)
 	{
 		tmp.delete("deleteShareByUserId", userId);
+	}
+
+	@Override
+	public List<Share> queryShareListByUserId(int userId)
+	{
+		return null;
 	}
 
 }

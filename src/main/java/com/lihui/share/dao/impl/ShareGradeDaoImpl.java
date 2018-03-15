@@ -55,4 +55,16 @@ public class ShareGradeDaoImpl implements IShareGradeDao
 		return template.selectList("queryShareGradeByShareId");
 	}
 
+	@Override
+	public void deleteShareGradeByShareId(@Param("s_id")int shareId)
+	{
+		template.delete("deleteShareGradeByShareId", shareId);
+	}
+
+	@Override
+	public void deleteShareGradeByUserId(int userId)
+	{
+		template.delete("deleteShareGradeByUserId");
+	}
+
 }

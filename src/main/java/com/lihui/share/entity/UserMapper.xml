@@ -20,14 +20,27 @@
         <result property="position" column="position" jdbcType="VARCHAR" javaType="String"/>
         <result property="level" column="level" jdbcType="VARCHAR" javaType="String"/>
         <result property="hiredate" column="hiredate" jdbcType="DATE" javaType="String"/>
-        
+        <association column="u_id" property="userGrade" javaType="com.lihui.share.entity.UserGrade">
+			<id column="user_grade_id" property="user_grade_id"/>
+			<result column="u_id" property="userId"/>
+			<result column="t_grade" property="grade"/>
+			
+		</association> 
 	</resultMap>
 	<select id="findAll" resultType="com.lihui.share.entity.User">
 		select user_id,loginame,name,sex,emp_id,pwd,email,tel,addr,company,dept,project,position,level,hiredate from t_user
 	</select>
-	<select id="queryUserByPage" resultType="com.lihui.share.entity.User">
-		select user_id,loginame,name,sex,emp_id,pwd,email,tel,addr,company,dept,project,position,level,date_format(hiredate,'%Y-%m-%d') as 'hiredate' from t_user
-		order by user_id ASC limit #{start},#{end}
+	<select id="queryUserByPage" resultMap="userResultMap">
+		<!--
+		select u.user_id,u.loginame,u.name,u.sex,u.emp_id,u.pwd,u.email,u.tel,u.addr,u.company,u.dept,u.project,u.position,u.level,date_format(u.hiredate,'%Y-%m-%d') as 'hiredate', 
+		from t_user u, t_usergrade ug
+		where u.user_id = ug.u_id
+		order by u.user_id ASC limit #{start},#{end}
+		-->
+		select u.user_id,u.loginame,u.name,u.sex,u.emp_id,u.pwd,u.email,u.tel,u.addr,u.company,u.dept,u.project,u.position,u.level,date_format(u.hiredate,'%Y-%m-%d') as 'hiredate', ug.*
+		from t_user u left join t_usergrade ug
+		on u.user_id = ug.u_id
+		order by u.user_id ASC limit #{start},#{end}
 	</select>
 	<select id="queryUserById" resultType="com.lihui.share.entity.User">
 		select * from t_user where user_id = #{user_id}
@@ -52,7 +65,7 @@
 				name=#{name,jdbcType=VARCHAR},
 			</if>
 			<if test="emp_id != null and emp_id != ''">
-				emp_id=#{emp_id,jdbcType=VARCHAR},
+				emp_id=#{emp_id,jdbcType=INTEGER},
 			</if>
 			<if test="pwd != null and pwd != ''">
 				pwd=#{pwd,jdbcType=VARCHAR},
@@ -82,7 +95,7 @@
 				level=#{level,jdbcType=VARCHAR},
 			</if>
 			<if test="hiredate != null and hiredate != ''">
-				hiredate=#{hiredate,jdbcType=VARCHAR},
+				hiredate=#{hiredate,jdbcType=DATE},
 			</if>
 			
 		</set>

@@ -28,4 +28,11 @@
 	<delete id="deleteShareGradeBySidAndUid">
 		delete from t_grade where share_id=#{s_id} and us_id=#{u_id}
 	</delete>
+	<delete id="deleteShareGradeByUserId">
+		delete from t_grade where us_id=#{u_id}
+	</delete>
+	
+	<delete id="deleteShareGradeByShareId">
+		delete from t_grade where share_id=#{s_id}
+	</delete>
 </mapper>

@@ -38,6 +38,8 @@ public class User
 //	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 //	@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
 	private String hiredate;
+	
+	private UserGrade userGrade;
 
 	public String getSex()
 	{
@@ -57,6 +59,16 @@ public class User
 	public void setHiredate(String hiredate)
 	{
 		this.hiredate = hiredate;
+	}
+
+	public UserGrade getUserGrade()
+	{
+		return userGrade;
+	}
+
+	public void setUserGrade(UserGrade userGrade)
+	{
+		this.userGrade = userGrade;
 	}
 
 	public int getUser_id()

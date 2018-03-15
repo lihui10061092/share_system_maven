@@ -33,7 +33,7 @@ function getAnnounceTitles() {
 				//                  		var myUrl = getContextPath + "/lihui/jsp/announce.jsp";
 				//遍历数组，取到数据动态创建DIV 或者li元素来显示
 				for (var i = 0; i < arry.length; i++) {
-					content = '<li> <a href=http://localhost:8080/share_system/lihui/jsp/announce.jsp target="_Blank">'
+					content = '<li> <a href=http://localhost:8080/Share_system/lihui/jsp/announce.jsp target="_Blank">'
 							+ arry[i].a_title + "<a/></li>"
 					$("#announces").append(content);
 				}

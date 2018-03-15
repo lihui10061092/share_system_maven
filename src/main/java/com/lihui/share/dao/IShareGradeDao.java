@@ -24,5 +24,9 @@ public interface IShareGradeDao
 	
 	//根据分享id查找分享的所有用户评分，用于计算分享总分及平均分，在Service层中实现该功能
 	public List<ShareGrade> queryShareGradeByShareId(@Param("s_id")int s_id);
+
+	public void deleteShareGradeByShareId(@Param("s_id") int shareId);
+
+	public void deleteShareGradeByUserId(@Param("u_id") int userId);
 	
 }

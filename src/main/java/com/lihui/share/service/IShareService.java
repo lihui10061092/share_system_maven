@@ -7,15 +7,15 @@ import com.lihui.share.entity.Share;
 
 public interface IShareService
 {
-	public List<Share> queryAllShare();
+//	public List<Share> queryAllShare();
 	
 	public List<Share> queryShareByPage(int pageIndex, int rowsOfPage);
 	
 	public Share queryShareById(int shareId);
 	
-	public void addShare(Map<String, Object> paramMap);
+	public void insertShare(Map<String, Object> paramMap);
 	
-	public void deleteShareById(int ShareId);
+	public void deleteShareById(int shareId);
 	
 	public void updateShare(Map<String, Object> paramMap);
 	
@@ -32,4 +32,11 @@ public interface IShareService
 	public List<Share> queryOthersShareByPage(int pageIndex, int rowsOfPage, int userId);
 	
 	public List<Share> queryMyShareByPage(int pageIndex, int rowsOfPage, int userId);
+
+	public List<Share> queryAllShareByAdmin(int pageIndex, int row);
+
+	public void updateAverageGrade(int shareId);
+
+	public void updateAdminGrade(int shareId, double adminGrade);
+	
 }

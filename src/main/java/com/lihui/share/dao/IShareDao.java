@@ -21,9 +21,9 @@ public interface IShareDao
 	
 	public void updateShare_grade(@Param("grade")double grade, @Param("s_id")int s_id);
 	
-	public void updateAdminGrade(@Param("ad_grade")int ad_grade, @Param("s_id")int s_id);
+	public void updateAdminGrade(@Param("ad_grade")double ad_grade, @Param("s_id")int s_id);
 	
-	public List<Share> queryAllShare();
+	public List<Share> queryAllShareByAdmin(@Param("start")int start, @Param("end")int end);
 	
 	public Share queryShareById(int shareId);
 	
@@ -42,4 +42,6 @@ public interface IShareDao
 	public int queryOthersShareCounts(@Param("userId") int userId);
 
 	public void deleteShareByUserId(@Param("userId") int userId);
+
+	public List<Share> queryShareListByUserId(@Param("userId") int userId);
 }

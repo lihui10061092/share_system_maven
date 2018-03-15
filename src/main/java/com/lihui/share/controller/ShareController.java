@@ -2,6 +2,7 @@ package com.lihui.share.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,9 +27,11 @@ import com.lihui.share.base.BaseController;
 import com.lihui.share.entity.Share;
 import com.lihui.share.entity.User;
 import com.lihui.share.service.IShareService;
+import com.lihui.share.service.IUserGradeService;
 import com.lihui.share.service.IUserService;
 import com.lihui.share.util.DateUtil;
 import com.lihui.share.util.ResultBean;
+import com.lihui.share.util.TimeStampUtil;
 
 @Controller
 @RequestMapping("/share")
@@ -43,6 +46,9 @@ public class ShareController extends BaseController
 	@Autowired
 	private IUserService userService;
 	
+	@Autowired
+	private IUserGradeService userGradeService;
+	
 	@RequestMapping(value = "/addshare.do")
 	@ResponseBody
 	public ResultBean insertShare(HttpServletRequest request, HttpServletResponse response) throws IOException
@@ -51,6 +57,7 @@ public class ShareController extends BaseController
 		String type = request.getParameter("type");
 		String subject = request.getParameter("subject");
 		String content = request.getParameter("content");
+		int studentNum = Integer.valueOf(request.getParameter("studentNum"));
 //		String fileNames = request.getParameter("sourceFile");//取不到。在后面的Multipart处理中获取文件名，同时重命名上传的文件
 		String shareDateStr = request.getParameter("sharedate");
 		Date shareDate = DateUtil.strToDate(shareDateStr);
@@ -58,7 +65,7 @@ public class ShareController extends BaseController
 		StringBuilder fileNamesSb = new StringBuilder();
 		
 		String curUserLoginName = (String) request.getSession().getAttribute("username");
-		User curUser = userService.findUserByLoginName(curUserLoginName);
+		User curUser = userService.queryUserByLoginName(curUserLoginName);
 		int userId = curUser.getUser_id();
 		
 		Map<String, Object> addParamMap = new HashMap<String, Object>();
@@ -67,10 +74,9 @@ public class ShareController extends BaseController
 		addParamMap.put("content", content);
 		addParamMap.put("u_id", Integer.valueOf(userId));
 		addParamMap.put("s_time", shareDate);
-//		addParamMap.put("attachments", "Spring核心及其应用示例.pptx,Spring Boot入门");
 		//新建时默认听课人数，评分等为0
 		addParamMap.put("grade", Double.valueOf(0));
-		addParamMap.put("stu_num", Integer.valueOf(0));
+		addParamMap.put("stu_num", Integer.valueOf(studentNum));
 		addParamMap.put("grade_num", Integer.valueOf(0));
 		addParamMap.put("ad_grade", Integer.valueOf(0));
 		// 创建一个通用的Multipart解析器
@@ -119,24 +125,37 @@ public class ShareController extends BaseController
 		//去掉最后一个逗号
 		uploadFileNames = uploadFileNames.substring(0,uploadFileNames.length()-1);
 		addParamMap.put("attachments", uploadFileNames);
-		shareService.addShare(addParamMap);
+		shareService.insertShare(addParamMap);
 		rb.setSuccess(true);
 		return rb;
 	}
 
-	@RequestMapping(value = "/deleteshare.do")
+	//删除分享，用户可以删除自己的分享，管理员可以删除所有人的分享
+	@RequestMapping(value = "/deleteShareById.do")
 	@ResponseBody
-	public ResultBean deleteShare(HttpServletRequest request, HttpServletResponse response) throws IOException
+	public ResultBean deleteShareById(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
 		ResultBean rb = ResultBean.getInstance();
+		int shareId = Integer.valueOf(request.getParameter("share_id"));
+		shareService.deleteShareById(shareId);
+		rb.setSuccess(true);
 		return rb;
 	}
 
+	//更新分享，用户可以更新自己的分享;管理员可以更新所有人的分享，同时进行评分
 	@RequestMapping(value = "/updateshare.do")
 	@ResponseBody
-	public ResultBean updateShare(HttpServletRequest request, HttpServletResponse response) throws IOException
+	public ResultBean updateShare(HttpServletRequest request, HttpServletResponse response)
 	{
 		ResultBean rb = ResultBean.getInstance();
+		boolean isSuccess = true;
+		Map<String, Object> updateParams = this.getAllParamsMap(request);
+//		Long updateTime = System.currentTimeMillis();
+		//设置更新时间
+		Timestamp udateTime = TimeStampUtil.getCurTimeStamp();
+		updateParams.put("ud_time", udateTime);
+		shareService.updateShare(updateParams);
+		rb.setSuccess(isSuccess);
 		return rb;
 	}
 
@@ -148,7 +167,7 @@ public class ShareController extends BaseController
 		return rb;
 	}
 
-	// 用户首页分页查询
+	// 用户首页分页查询，查询自己创建的
 	@RequestMapping(value = "/queryMyShareByPage.do")
 	@ResponseBody
 	public JSONObject queryMyShareByPage(HttpServletRequest request, HttpServletResponse response) throws IOException
@@ -160,7 +179,7 @@ public class ShareController extends BaseController
 		// 每页显示几条数据
 		int row = Integer.valueOf(request.getParameter("rows"));
 		String curUserLoginName = (String) request.getSession().getAttribute("username");
-		User curUser = userService.findUserByLoginName(curUserLoginName);
+		User curUser = userService.queryUserByLoginName(curUserLoginName);
 		int userId = curUser.getUser_id();
 		List<Share> myShareList = shareService.queryMyShareByPage(pageIndex, row, userId);
 //		List<Share> myShareList = shareService.filterMyShare(shares, userId);
@@ -176,6 +195,12 @@ public class ShareController extends BaseController
 	}
 
 	//首页查询分享，不查询自己创建的
+	/**
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/queryOthersShareByPage.do")
 	@ResponseBody
 	public JSONObject queryOthersShareByPage(HttpServletRequest request, HttpServletResponse response) throws IOException
@@ -184,40 +209,50 @@ public class ShareController extends BaseController
 		JSONObject jo = new JSONObject();
 		//当前用户登录名
 		String curUserLoginName = (String) request.getSession().getAttribute("username");
-		User curUser = userService.findUserByLoginName(curUserLoginName);
+		User curUser = userService.queryUserByLoginName(curUserLoginName);
 		int userId = curUser.getUser_id();
 		// 当前页数
 		int pageIndex = Integer.valueOf(request.getParameter("page"));
 		// 每页显示几条数据
 		int row = Integer.valueOf(request.getParameter("rows"));
 		List<Share> allOtherShares = shareService.queryOthersShareByPage(pageIndex, row, userId);
-		//filter位置有问题
-//		List<Share> shares = shareService.filterOthersShare(allShares, userId);
-		// JSONArray ja = new JSONArray(shares);
-		// 将List<?>转换成JSONArray对象
-//		int allShareCounts = shareService.getAllShareCounts();
-//		int myShareCounts = shareService.getMyShareCounts(userId);
 		int othersShareCounts = shareService.queryOthersShareCounts(userId);
 		JSONArray ja = JSONArray.parseArray(JSON.toJSONString(allOtherShares));
-		// jo.put("total", shares.size());
 		//前端需要总条数，以及数据，来计算分页显示
 		jo.put("total", othersShareCounts);
 		jo.put("rows", ja);
 		return jo;
 	}
 	
-	// @RequestMapping(value="/getPageCount.do")
-	// @ResponseBody
-	// public ResultBean calculatePageCounts(HttpServletRequest request,
-	// HttpServletResponse response) throws IOException
-	// {
-	// ResultBean rb = ResultBean.getInstance();
-	// return rb;
-	// }
-	//TODO 更新管理员评分，更新之后更新分享平均分
-	public ResultBean addOrUpdateAdminGrade()
+	//管理员查询所有分享，分页查询 20180113
+	@RequestMapping(value = "/queryAllShareByAdmin.do")
+	@ResponseBody
+	public JSONObject queryAllShareByAdmin(HttpServletRequest request, HttpServletResponse response)
+	{
+		JSONObject jo = new JSONObject();
+		int pageIndex = Integer.valueOf(request.getParameter("page"));
+		// 每页显示几条数据
+		int row = Integer.valueOf(request.getParameter("rows"));
+		List<Share> allShareList = shareService.queryAllShareByAdmin(pageIndex, row);
+		int allShareCounts = shareService.queryAllShareCounts();
+		JSONArray ja = JSONArray.parseArray(JSON.toJSONString(allShareList));
+		jo.put("total", allShareCounts);
+		jo.put("rows", ja);
+		return jo;
+	}
+	//更新分享的管理员评分，更新之后更新分享平均分，重新计算用户总得分。
+	@RequestMapping(value = "/addOrUpdateAdminGrade.do")
+	@ResponseBody
+	public ResultBean addOrUpdateAdminGrade(HttpServletRequest request, HttpServletResponse response)
 	{
 		ResultBean rb = ResultBean.getInstance();
+		int shareId = Integer.valueOf(request.getParameter("s_id"));
+		double adminGrade = Double.valueOf(request.getParameter("ad_grade"));
+		shareService.updateAdminGrade(shareId, adminGrade);
+		shareService.updateAverageGrade(shareId);
+		Share share = shareService.queryShareById(shareId);
+		userGradeService.addOrUpdateUserGrade(share.getAuther().getUser_id(), shareId);
+		rb.setSuccess(true);
 		return rb;
 	}
 	

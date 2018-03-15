@@ -1,0 +1,2 @@
+0:0:0:0:0:0:0:1 - - [14/Mar/2018:10:41:18 +0800] "GET /Share_system/lihui/jsp/homepage.jsp HTTP/1.1" 302 - http-bio-8080-exec-1 168
+0:0:0:0:0:0:0:1 - - [14/Mar/2018:10:41:19 +0800] "GET /Share_system/lihui/jsp/userlogin.jsp HTTP/1.1" 200 7440 http-bio-8080-exec-6 1388

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<titles>
+	<title key="user_id" value="用户编号"></title>
+	<title key="" value="工号"></title>
+	<title key="" value="姓名"></title>
+	<title key="" value="登录名"></title>
+	<title key="" value="性别"></title>
+	<title key="" value="邮箱"></title>
+	<title key="" value="手机号"></title>
+	<title key="" value="住址"></title>
+	<title key="" value="公司名称"></title>
+	<title key="" value="所属部门"></title>
+	<title key="" value="项目组"></title>
+	<title key="" value="职位"></title>
+	<title key="" value="级别"></title>
+	<title key="" value="入职日期"></title>
+	
+	
+</titles>

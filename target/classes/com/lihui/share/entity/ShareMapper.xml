@@ -11,12 +11,13 @@
         <result property="subject" column="subject" jdbcType="VARCHAR" javaType="String"/>
         <result property="content" column="content" jdbcType="VARCHAR" javaType="String"/>
         
-        <result property="shareDate" column="s_time" jdbcType="DATE" javaType="Date"/>
+        <result property="shareDate" column="s_time" jdbcType="DATE" javaType="String"/>
         <result property="attachements" column="attachments" jdbcType="VARCHAR" javaType="String"/>
         <result property="grade" column="grade" jdbcType="DOUBLE" javaType="double"/>
         <result property="studentNum" column="stu_num" jdbcType="INTEGER" javaType="int"/>
         <result property="grade_num" column="grade_num" jdbcType="INTEGER" javaType="int"/>
         <result property="adGrade" column="ad_grade" jdbcType="INTEGER" javaType="int"/>
+        <result property="lastModifyTime" column="lastmodifytime" jdbcType="TIMESTAMP" javaType="String"/>  
         <!--一对一关联用 association标签-->
         <association column="u_id" property="auther" javaType="com.lihui.share.entity.User">
 			<id column="user_id" property="user_id"/>
@@ -50,24 +51,29 @@
         <result property="shareId" column="share_id"/>
         <result property="userId" column="us_id"/>
         <result property="grade" column="u_grade"/>
-        </collection>       
+        </collection>
+              
     </resultMap> 
-	<select id="queryAllShare" resultMap="shareResultMap">
-		select s.s_id,s.type,s.subject,s.content,s.s_time,s.attachments,s.grade,s.stu_num,s.grade_num,
-		s.ad_grade,u.user_id from t_share s, t_user u where s.u_id=u.user_id
+	<select id="queryAllShareByAdmin" resultMap="shareResultMap">
+		select s.s_id,s.type,s.subject,s.content,date_format(s.s_time,'%Y-%m-%d') as 's_time',s.attachments,s.grade,s.stu_num,s.grade_num,
+		s.ad_grade,date_format(s.lastmodifytime,'%Y-%m-%d %h:%i %p') as 'lastmodifytime' ,u.* from t_share s,t_user u 
+		where u.user_id = s.u_id 
+		order by s.s_time DESC limit #{start},#{end}
 	</select>
 	<select id="queryShareByPage" resultMap="shareResultMap">
-		select s_id,type,subject,content,u_id,s_time,attachments,grade,stu_num,grade_num,ad_grade from t_share
+		select s_id,type,subject,content,u_id,date_format(s_time,'%Y-%m-%d') as 's_time',attachments,grade,stu_num,grade_num,ad_grade
+		date_format(lastmodifytime,'%Y-%m-%d %h:%i %p') as 'lastmodifytime' from t_share
 		order by s_id DESC limit #{start},#{end}
 	</select>
 	
 	<select id="queryOthersShareByPage" resultMap="shareResultMap">
-		<!--
+		<!--写了好多个版本。。。。
 		select s.s_id,s.type,s.subject,s.content,s.s_time,s.attachments,s.grade,s.stu_num,s.grade_num,s.ad_grade,u.*,g.*
 		 from 
 		t_share s, t_user u ,t_grade g
 		where s.u_id=u.user_id and s.u_id != #{userId} and s.s_id = g.share_id and g.us_id = #{userId} order by s_id DESC limit #{start},#{end}
 		-->
+		<!--
 		select s.s_id,s.type,s.subject,s.content,s.s_time,s.attachments,s.grade,s.stu_num,s.grade_num,s.ad_grade,u.*,g.*
 		 from 
 		t_share s
@@ -75,14 +81,47 @@
 	left join t_grade g on s.s_id = g.share_id
     where s.u_id != #{userId}
 		order by s.s_id DESC limit #{start},#{end}
+		-->
+		<!--
+		select t.*,u.* from (select s.s_id,s.u_id,s.type,s.subject,s.content,s.s_time,s.attachments,s.grade,s.stu_num,s.grade_num,s.ad_grade,g.*
+		 from 
+			t_share s
+				left join t_grade g on s.s_id = g.share_id
+					and g.us_id = #{userId}
+					and s.u_id != #{userId} where 1= 1
+					order by g.u_grade desc ) t,
+					t_user u where t.u_id = u.user_id
+					limit #{start},#{end}
+		 -->
+		select t.*,u.* from (select s.s_id,s.u_id,s.type,s.subject,s.content,date_format(s.s_time,'%Y-%m-%d') as 's_time',
+		date_format(s.lastmodifytime,'%Y-%m-%d %h:%i %p') as 'lastmodifytime',
+		s.attachments,s.grade,s.stu_num,s.grade_num,s.ad_grade,g.*
+		 from 
+			t_share s
+				left join t_grade g on s.s_id = g.share_id
+					and g.us_id = #{userId}
+					 where s.u_id != #{userId}
+					order by g.u_grade desc ) t,
+					t_user u where t.u_id = u.user_id
+					limit #{start},#{end}
 	</select>
 	<select id="queryMyShareByPage" resultMap="shareResultMap">
-		select s.s_id,s.type,s.subject,s.content,s.s_time,s.attachments,s.grade,s.stu_num,s.grade_num,s.ad_grade from 
+		select s.s_id,s.type,s.subject,s.content,date_format(s.s_time,'%Y-%m-%d') as 's_time',
+		date_format(s.lastmodifytime,'%Y-%m-%d %h:%i %p') as 'lastmodifytime',
+		s.attachments,s.grade,s.stu_num,s.grade_num,s.ad_grade from 
 		t_share s, t_user u 
-		where s.u_id=u.user_id and u_id = #{userId} order by s_id DESC limit #{start},#{end}
+		where s.u_id=u.user_id and s.u_id = #{userId} order by s.s_id DESC limit #{start},#{end}
+	</select>
+	
+	<select id="queryShareListByUserId" resultMap="shareResultMap">
+		select s.s_id,s.type,s.subject,s.content,date_format(s.s_time,'%Y-%m-%d') as 's_time',
+		date_format(s.lastmodifytime,'%Y-%m-%d %h:%i %p') as 'lastmodifytime',
+		s.attachments,s.grade,s.stu_num,s.grade_num,s.ad_grade from 
+		t_share s, t_user u 
+		where s.u_id=u.user_id and u_id = #{userId} order by s_time DESC
 	</select>
 	<select id="queryShareById" resultMap="shareResultMap">
-		select * from t_share where s_id = #{0}
+		select s.*,u.* from t_share s, t_user u where s_id = #{0} and s.u_id = u.user_id
 	</select>
 	
 	<select id="queryAllShareCounts" resultType="Integer">
@@ -98,11 +137,60 @@
 	</select>
 	
 	<update id="updateShare">
+		<!--
 		update t_share set type=#{type,jdbcType=VARCHAR},subject=#{subject,jdbcType=VARCHAR},content=#{content,jdbcType=VARCHAR},
 		       u_id=#{u_id,jdbcType=INTEGER},
                s_time=#{s_time,jdbcType=DATE},attachments=#{attachments,jdbcType=VARCHAR},grade=#{grade,jdbcType=DOUBLE},
                stu_num=#{stu_num,jdbcType=INTEGER},grade_num=#{grade_num,jdbcType=INTEGER},ad_grade=#{ad_grade,jdbcType=INTEGER}
                where s_id=#{s_id,jdbcType=INTEGER}
+               -->
+        update t_share 
+		<set>
+			<if test="type != null and type != ''">
+				type=#{type,jdbcType=VARCHAR},
+			</if>
+			<if test="subject != null and subject != ''">
+				subject=#{subject,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null and content != ''">
+				content=#{content,jdbcType=VARCHAR},
+			</if>
+			<!--分享人id和分享时间，附件不允许更新
+			<if test="u_id != null and u_id != ''">
+				u_id=#{u_id,jdbcType=INTEGER},
+			</if>
+			
+			<if test="s_time != null and s_time != ''">
+				s_time=#{s_time,jdbcType=DATE},
+			</if>
+			
+			<if test="attachments != null and attachments != ''">
+				attachments=#{attachments,jdbcType=VARCHAR},
+			</if>
+			
+			
+			<if test="grade != null and grade != ''">
+				grade=#{grade,jdbcType=DOUBLE},
+			</if>
+			<if test="grade_num != null and grade_num != ''">
+				grade_num=#{grade_num,jdbcType=INTEGER},
+			</if>
+			-->
+			<if test="ad_grade != null and ad_grade != ''">
+				ad_grade=#{ad_grade,jdbcType=DOUBLE},
+			</if>
+			
+			<if test="ud_time != null and ud_time != ''">
+				lastmodifytime=#{ud_time,jdbcType=TIMESTAMP},
+			</if>
+			<if test="stu_num != null and stu_num != ''">
+				stu_num=#{stu_num,jdbcType=INTEGER},
+			</if>
+			
+			
+			
+		</set>
+			where s_id=#{s_id,jdbcType=INTEGER}
 	</update>
 	<!--更新各个字段  ad_grade,jdbcType=INTEGER  S_id,jdbcType=INTEGER-->
 	<update id="updateShare_gradeNum">

@@ -18,7 +18,7 @@
 <servlet-mapping>  
     <servlet-name>springmvc</servlet-name>  
     <url-pattern>*.do</url-pattern>  
-</servlet-mapping>  
+</servlet-mapping> 
 <filter>
     <filter-name>SessionFilter</filter-name>
     <filter-class>com.lihui.share.filter.SessionFilter</filter-class>

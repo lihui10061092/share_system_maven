@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lihui.share.base.BaseController;
+import com.lihui.share.entity.Share;
 import com.lihui.share.entity.ShareGrade;
 import com.lihui.share.entity.User;
 import com.lihui.share.service.IShareGradeService;
+import com.lihui.share.service.IShareService;
+import com.lihui.share.service.IUserGradeService;
 import com.lihui.share.service.IUserService;
 import com.lihui.share.util.ResultBean;
 
@@ -21,11 +24,18 @@ public class ShareGradeController extends BaseController
 {
 	@Autowired
 	private IShareGradeService shareGradeService;
+	
+	@Autowired
+	private IShareService shareService;
+	
 	@Autowired
 	private IUserService userService;
 	
+	@Autowired
+	private IUserGradeService userGradeService;
+	
 	/**
-	 * 用户在首页对分享进行评分，新增或更新评分
+	 * 用户在首页对其他人的分享进行评分，新增或更新评分
 	 * @param request
 	 * @param response
 	 * @return
@@ -35,10 +45,10 @@ public class ShareGradeController extends BaseController
 	public ResultBean addOrUpdateShareGradeByUserIdAndShareId(HttpServletRequest request, HttpServletResponse response)
 	{
 		ResultBean rb = ResultBean.getInstance();
-		Integer shareId = Integer.parseInt(request.getParameter("shareId"));
+		Integer shareId = Integer.parseInt(request.getParameter("s_id"));
 //		Integer userId = Integer.parseInt(request.getParameter("userId"));
 		String curUserLoginName = (String) request.getSession().getAttribute("username");
-		User curUser = userService.findUserByLoginName(curUserLoginName);
+		User curUser = userService.queryUserByLoginName(curUserLoginName);
 		int userId = curUser.getUser_id();
 		double myScore = Double.parseDouble(request.getParameter("myScore"));
 		ShareGrade shareGrade = shareGradeService.queryShareGradeByShareIdAndUserId(shareId, userId);
@@ -51,21 +61,11 @@ public class ShareGradeController extends BaseController
 		{//查不到则新增
 			shareGradeService.insertShareGrade(shareId, userId, myScore);
 		}
+		//更新用户评分后，计算和更新该分享的平均分。更新分享人的总得分
+		shareService.updateAverageGrade(shareId);
+		Share share = shareService.queryShareById(shareId);
+		userGradeService.addOrUpdateUserGrade(share.getAuther().getUser_id(), shareId);
 		rb.setSuccess(true);
-		return rb;
-	}
-	/**
-	 * 计算分享平均分，算法：((用户评分总和S/用户评分数N)+管理员评分AG)/2
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping()
-	@ResponseBody
-	public ResultBean calculateAverageGrade(HttpServletRequest request, HttpServletResponse response)
-	{
-		ResultBean rb = ResultBean.getInstance();
-		
 		return rb;
 	}
 	

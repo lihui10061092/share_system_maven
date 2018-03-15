@@ -26,20 +26,13 @@ public class AnnounceController extends BaseController
 	
 	@SuppressWarnings("rawtypes")
 	@ResponseBody
+	//查询标题，显示在首页左侧
 	@RequestMapping(value = "/querytitles.do")
 	public ResultBean getTitles(HttpServletRequest request, HttpServletResponse response)
 	{
 		ResultBean rb = ResultBean.getInstance();
 		rb.setSuccess(true);
 		List<Map> titles = annouceService.queryTitles();
-//		int i = 1;
-//		for(Map<String, String> titleMap : titles)
-//		{
-////			Map.Entry<String, String> entry = (Entry<String, String>) titleMap.entrySet();
-//			String value = titleMap.get("a_title");
-//			titleMap.clear();
-//			titleMap.put("a_title" + i++, value);
-//		}
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("result", titles);
 		rb.setData(data);
@@ -49,7 +42,7 @@ public class AnnounceController extends BaseController
 	
 	@ResponseBody
 	@RequestMapping(value = "/queryannounces.do")
-	public ResultBean getAnnounces(HttpServletRequest request, HttpServletResponse response)
+	public ResultBean queryAnnounces(HttpServletRequest request, HttpServletResponse response)
 	{
 		ResultBean rb = ResultBean.getInstance();
 		List<Announcement> anns = annouceService.queryAnnounce();
@@ -65,6 +58,16 @@ public class AnnounceController extends BaseController
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("result", anns);
 		rb.setData(data);
+		return rb;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/insertannounce.do")
+	public ResultBean insertAnnounce(HttpServletRequest request, HttpServletResponse response)
+	{
+		ResultBean rb = ResultBean.getInstance();
+		Map<String, Object> paramMap = this.getAllParamsMap(request);
+		
 		return rb;
 	}
 }

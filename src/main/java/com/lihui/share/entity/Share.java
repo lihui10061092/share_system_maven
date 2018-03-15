@@ -1,16 +1,14 @@
 package com.lihui.share.entity;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.lihui.share.util.DateUtil;
 
 public class Share
 {
 	//分享ID
 	private int shareId;
-	//类型（技术、营销等）
+	//类型（技术、营销、人事等）
 	private String type;
 	//主题
 	private String subject;
@@ -22,7 +20,7 @@ public class Share
 	
 //	private String autherId;
 	//日期	
-	private Date shareDate;
+	private String shareDate;
 	//附件名称
 	private String attachements;
 	//评分（平均分）
@@ -35,6 +33,8 @@ public class Share
 	private int adGrade;
 	//当前用户评分，用于在首页显示。
 	private List<ShareGrade> userGrades;
+	
+	private String lastModifyTime;
 //	private ShareGrade shareGrade;
 	
 //	public ShareGrade getShareGrade()
@@ -85,13 +85,22 @@ public class Share
 //	{
 //		this.userId = userId;
 //	}
-	public Date getShareDate()
+	public String getShareDate()
 	{
 		return shareDate;
 	}
-	public void setShareDate(Date shareDate)
+	public void setShareDate(String shareDate)
 	{
 		this.shareDate = shareDate;
+	}
+	
+	public String getLastModifyTime()
+	{
+		return lastModifyTime;
+	}
+	public void setLastModifyTime(String lastModifyTime)
+	{
+		this.lastModifyTime = lastModifyTime;
 	}
 	public String getAttachements()
 	{
@@ -164,7 +173,7 @@ public class Share
 		
 	}
 	
-	public Share(int shareId, String type, String subject, String content,  int userId, Date shareDate,
+	public Share(int shareId, String type, String subject, String content,  int userId, String shareDate,
 			String attachements, double grade, int studentNum, int grade_num, int adGrade, User user)
 	{
 		this.shareId = shareId;
@@ -189,7 +198,8 @@ public class Share
 		this.subject = shareMap.get("subject");
 		this.content = shareMap.get("content");
 //		this.userId = Integer.parseInt(shareMap.get("userId"));
-		this.shareDate = DateUtil.strToDate(shareMap.get("shareDate"));
+//		this.shareDate = DateUtil.strToDate(shareMap.get("shareDate"));
+		this.shareDate = shareMap.get("shareDate");
 		this.attachements = shareMap.get("attachements");
 		this.grade = Double.parseDouble(shareMap.get("grade"));
 		this.studentNum = Integer.parseInt(shareMap.get("studentNum"));

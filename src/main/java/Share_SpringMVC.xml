@@ -35,6 +35,7 @@
    
     <!--启用自动扫描  -->  
     <context:component-scan base-package="com.lihui.share" /> 
+    <context:property-placeholder location="classpath:quartzconfig.properties"  ignore-unresolvable="true" />
      
      <!-- 默认的注解映射的支持
     <mvc:annotation-driven /> 
@@ -140,4 +141,30 @@
         <property name="defaultEncoding" value="UTF-8"/>
         <property name="maxUploadSize" value="9400000"/>
   </bean> 
+  
+  <!-- 定时器：测试quartz类的使用方法 -->
+    <!-- JOB配置，定义调用的对象及对象中的方法 -->
+    <bean id="defTestJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="myTestQuartz" />
+        <property name="targetMethod" value="execute" />
+        <property name="concurrent" value="false" /> <!-- 是否支持并发 -->
+    </bean>
+    <!-- Cron表达式触发器，con表达式与Linux 中的调度任务crontab语法一样  -->
+    <bean id="cronTriggerJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="defTestJob" />
+        <property name="cronExpression">
+        	<!-- value="0/3 * * * * ?"-->
+            <value>${crmbi.cronExpression.testJob}</value>        
+        </property>    
+    </bean>
+    <!--配置总调度器 -->
+    <bean id="startQuartz" lazy-init='false' autowire="no"
+            class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
+        <property name="triggers">  
+            <list>  
+                <ref bean="cronTriggerJob" />
+            </list>  
+        </property>  
+    </bean>  
+    
 </beans>

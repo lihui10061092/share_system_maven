@@ -33,7 +33,7 @@
 <body>
 <!-- class="easyui-window" background:url(../images/loginbg.jpg); -->
 
-<div id="loginWin" class="easyui-window" title="用户登录" style="width:450px;height:250px;padding:5px;"
+<div id="loginWin" class="easyui-window" title="欢迎登录" style="width:450px;height:250px;padding:5px;"
    minimizable="false" maximizable="false" resizable="true" collapsible="false">
     <div class="easyui-layout" fit="true">
        <div region="center" border="false" style="padding:5px;background:#fff;border:1px solid #ccc;">

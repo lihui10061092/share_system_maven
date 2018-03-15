@@ -4,27 +4,28 @@
 <mapper namespace="com.lihui.share.dao.IUserGradeDao">
 	<!-- 自定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
 	<resultMap type="com.lihui.share.entity.UserGrade" id="userGradeResultMap">
+		<result property="user_grade_id" column="user_grade_id" jdbcType="INTEGER" javaType="Integer"/>
         <result property="userId" column="u_id" jdbcType="INTEGER" javaType="Integer"/>
         <result property="grade" column="t_grade" jdbcType="DOUBLE" javaType="Double"/>
     </resultMap> 
     
     <insert id="insertUserGrade">
-    	insert into t_integrade (u_id,t_grade) values(#{u_id},#{grade})
+    	insert into t_usergrade (u_id,t_grade) values(#{u_id},#{grade})
     </insert>
     
     <update id="updateUserGrade">
-		update t_integrade set t_grade=#{grade} where u_id=#{u_id}
+		update t_usergrade set t_grade=#{grade} where u_id=#{u_id}
 	</update>
     
-	<select id="findUserGradeByUid" resultMap="userGradeResultMap">
-		select * from t_integrade where u_id=#{u_id}
+	<select id="queryUserGradeByUid" resultMap="userGradeResultMap">
+		select * from t_usergrade where u_id=#{u_id}
 	</select>
 	
-	<select id="findAllUserGrade" resultMap="userGradeResultMap">
-		select * from t_integrade;
+	<select id="queryAllUserGrade" resultMap="userGradeResultMap">
+		select * from t_usergrade;
 	</select>
 	<delete id="deleteUserGrade">
-		delete from t_integrade where u_id=#{u_id}
+		delete from t_usergrade where u_id=#{u_id}
 	</delete>
 	<!---->
 </mapper>

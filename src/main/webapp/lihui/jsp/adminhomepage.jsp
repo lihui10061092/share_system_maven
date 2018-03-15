@@ -13,6 +13,7 @@
 <script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/easyUI/locale/easyui-lang-zh_CN.js" ></script>
 <script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/js/mytree.js"></script>
 <script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/js/usermanagement.js"></script>
+<script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/js/sharemanagement.js"></script>
 <!--  
 <script type="text/javascript" language="javascript" src="<%=contextPath%>/lihui/js/jquery.cookie.js"></script>
 -->
@@ -59,7 +60,7 @@ $(function(){
 <div>欢迎您，<%=admin%></div>
  </div>   
     <div data-options="region:'south',title:'版权信息',split:true" style="height:100px;">
-    <div>CopyRight Lihui@2017</div>
+    <div>CopyRight Lihui@2018</div>
     </div>   
       
     <div id="management" data-options="region:'west',title:'管理',split:true" style="width:250px;">
@@ -72,13 +73,13 @@ $(function(){
                 <span>用户管理</span>   
             </li>   
             <li>   
-                <span>分享管理 </span>   
+                <span>分享管理</span>   
             </li> 
              <li>   
-                <span>公告管理 </span>   
+                <span>公告管理</span>   
             </li>
              <li>   
-                <span>论坛管理 </span>   
+                <span>论坛管理</span>   
             </li>  
         </ul>   
     </li>   
